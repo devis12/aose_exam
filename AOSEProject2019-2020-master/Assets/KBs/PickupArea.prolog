@@ -18,6 +18,10 @@ add call_drone(B) && true => [
 
     /*trigger a drone to perform init actual delivery*/
     act (getDrone, Drone),
+    (
+        not(check_agent_belief(Drone, busy)),
+        add_agent_belief(Drone, busy)
+    ),
     add_agent_desire(Drone, init_delivery(B)),
 
     stop
