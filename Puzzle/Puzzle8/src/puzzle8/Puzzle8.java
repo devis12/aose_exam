@@ -355,6 +355,8 @@ public class Puzzle8 extends Application {
         root.addEventHandler(KeyEvent.KEY_PRESSED, gestoreTastiera);
         primaryStage.setTitle("Puzzle8");
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
+        primaryStage.sizeToScene();
         primaryStage.show();
     }
 

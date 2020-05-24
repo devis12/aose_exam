@@ -7,6 +7,7 @@ package puzzle15;
 
 import java.io.File;
 import javafx.application.Application;
+import javafx.beans.property.BooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -158,7 +159,6 @@ public class Puzzle15 extends Application {
         Scene scene = new Scene(root, 600, 600);
         
         
-        
          EventHandler<KeyEvent> gestoreTastiera = new EventHandler<KeyEvent>() {
             
                public void handle(KeyEvent keyEvent) {
@@ -227,6 +227,8 @@ public class Puzzle15 extends Application {
         root.addEventHandler(KeyEvent.KEY_PRESSED, gestoreTastiera);
         primaryStage.setTitle("Puzzle15");
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
+        primaryStage.sizeToScene();
         primaryStage.show();
     }
 
