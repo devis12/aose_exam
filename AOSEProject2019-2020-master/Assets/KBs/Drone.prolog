@@ -26,7 +26,7 @@ add bring_to_platform && ((belief busy), (belief holding(B))) => [
     check_agent_belief(S, area(Start)),
     check_agent_belief(D, area(Dest)),
     
-    act printLog("I have to take the box from " + Start + " to " + Dest),
+    act printLog("Box needs to be taken from " + Start + " to " + Dest),
 
     /*get reference for the exchange platform to take the box B to*/
     act (getLandingZone(Start,Dest), L),
@@ -41,8 +41,10 @@ add bring_to_platform && ((belief busy), (belief holding(B))) => [
     del_belief(holding(B)),
 
     /*trigger railbot of corresp. exchange platform*/
+    act printLog("BEFORE triggering railbot"),
     act (getRailBot(Start), RailBot),
-    add_agent_desire(RailBot, init_pkg_switch(B)),
+    add_agent_desire(RailBot, pkg_switch(B)),
+    act printLog("AFTER triggering railbot"),
 
     add_desire(recharge),
 
@@ -50,8 +52,8 @@ add bring_to_platform && ((belief busy), (belief holding(B))) => [
 ].
 
 /*  trigger by railbot in order to finish the delivery, taking box B to destination address*/
-add finish_delivery(B) && true => [
-    
+add finish_delivery(B) && (belief busy) => [
+    act printLog("got to finish delivery"),
     cr takeOff,
     cr goTo(B),
     cr land,
