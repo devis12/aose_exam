@@ -4,9 +4,6 @@ desire generateBoxes.
 
 add generateBoxes && true =>
 [	
-	/*add_desire(createBox(1,4)),
-	add_desire(createBox(1,8)),*/
-
 	add_desire(createBox(1,8)),
 	add_desire(createBox(7,0)),
 	add_desire(createBox(2,3)),
