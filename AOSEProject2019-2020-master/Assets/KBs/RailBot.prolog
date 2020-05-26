@@ -25,17 +25,12 @@ add pkg_switch(B) && ((belief busy), belief(holding(B))) => [
 
     /*Start & Destination area are the same: drop down the package where it was*/
     Start = Dest,
-
     act printLog("pkg switch same area"),
 
     act (getArea(Dest), DestPlatform),
 
     /*trigger a drone to perform ending part of delivery*/
     act (getDrone, Drone),
-    (
-        not(check_agent_belief(Drone, busy)),
-        add_agent_belief(Drone, busy)
-    ),
     add_agent_desire(Drone, finish_delivery(B)),
 
     /*now, you can put down the box and go recharge*/
@@ -103,16 +98,14 @@ add pkg_switch_reverse(B) && (\+ belief busy) => [
     check_agent_belief(S, area(Start)),
     act (getArea(Start), StartPlatform),
     cr goTo(StartPlatform),
-
+    
+    
     /*trigger a drone to perform ending part of delivery*/
     add_desire(drone_delivery(B)),
     act (getDrone, Drone),
-    (
-        not(check_agent_belief(Drone, busy)),
-        add_agent_belief(Drone, busy)
-    ),
     add_agent_desire(Drone, finish_delivery(B)),
 
+    
     act dropDown(StartPlatform),
     add_belief(needRecharge)
 ].

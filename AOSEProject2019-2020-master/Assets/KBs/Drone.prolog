@@ -1,25 +1,22 @@
 :- consult("UnityLogic/KBs/UnityLogicAgentAPI.prolog").
 
-/*  PickupArea has requested a drone to come take a box B */
+/*  PickupArea has requested a drone to come take a box B 
+    NOTE: busy "lock" set up by pickupArea
+*/
 add init_delivery(B) && (belief busy) => [
-    
+    /*Go to take the object from source house*/
     cr takeOff,
     cr goTo(B),
     cr land,
-
     act pickUp(B),
     
-    add_desire(bring_to_platform),
-    add_belief(holding(B)),
-
-    stop
+    add_belief(holding(B))
 ].
 
 /*  Just pickUp box B and need to take it to the exchange platform
-        
-    B has belief start(S) & destination(D)
+    NOTE: B has belief start(S) & destination(D)
 */
-add bring_to_platform && ((belief busy), (belief holding(B))) => [
+add init_delivery(B) && (belief holding(B)) => [
     /*check for the source & destination area of B*/
     check_artifact_belief(B, start(S)),
     check_artifact_belief(B, destination(D)),
@@ -46,31 +43,45 @@ add bring_to_platform && ((belief busy), (belief holding(B))) => [
     add_agent_desire(RailBot, pkg_switch(B)),
     act printLog("AFTER triggering railbot"),
 
-    add_desire(recharge),
+    add_belief(needRecharge)
+].
 
+/*  need to recharge after init_delivery*/
+add init_delivery(_) && (belief needRecharge) => [
+    
+    /*get recharging station*/
+    act (getChargingStation, CS),
+
+    /*go to the charging station to rest*/
+    cr takeOff,
+    cr goTo(CS),
+    cr land,
+
+    del_belief(busy),
+    del_belief(needRecharge),
+    
     stop
 ].
 
 /*  trigger by railbot in order to finish the delivery, taking box B to destination address*/
-add finish_delivery(B) && (belief busy) => [
-    act printLog("got to finish delivery"),
+add finish_delivery(B) && (\+ belief busy) => [
+    
+    add_belief(busy),
+    
+    /*Pickup box B to deliver it to destination house*/
     cr takeOff,
     cr goTo(B),
     cr land,
 
     act pickUp(B),
     
-    add_desire(bring_to_house),
-    add_belief(holding(B)),
-
-    stop
+    add_belief(holding(B))
 ].
 
 /*  Just pickUp box B and need to take it to the destination house
-        
     B has belief start(S) & destination(D)
 */
-add bring_to_house && ((belief busy), (belief holding(B))) => [
+add finish_delivery(B) && (belief holding(B)) => [
     /*check for the source & destination area of B*/
     check_artifact_belief(B, destination(D)),
 
@@ -86,13 +97,12 @@ add bring_to_house && ((belief busy), (belief holding(B))) => [
     /*trigger pickup area of corresp. destination platform to "consume" package*/
     add_agent_desire(D, delivered(B)),
 
-    add_desire(recharge),
-
-    stop
+    add_belief(needRecharge)
 ].
 
-/*  need to recharge */
-add recharge && (belief busy) => [
+
+/*  need to recharge after finish_delivery*/
+add finish_delivery(_) && (belief needRecharge) => [
     
     /*get recharging station*/
     act (getChargingStation, CS),
@@ -103,6 +113,7 @@ add recharge && (belief busy) => [
     cr land,
 
     del_belief(busy),
+    del_belief(needRecharge),
     
     stop
 ].
