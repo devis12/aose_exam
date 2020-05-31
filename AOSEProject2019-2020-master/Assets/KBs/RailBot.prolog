@@ -29,9 +29,8 @@ add pkg_switch(B) && ((belief busy), belief(holding(B))) => [
 
     act (getArea(Dest), DestPlatform),
 
-    /*trigger a drone to perform ending part of delivery*/
-    act (getDrone, Drone),
-    add_agent_desire(Drone, finish_delivery(B)),
+    /*need to call drone for delivery*/
+    add_belief(drone_delivery(B)),
 
     /*now, you can put down the box and go recharge*/
     act dropDown(DestPlatform),
@@ -68,6 +67,16 @@ add pkg_switch(B) && ((belief busy), belief(holding(B))) => [
     add_belief(needRecharge)
 ].
 
+add pkg_switch(_) && (belief drone_delivery(B)) => [
+    act (getDrone, Drone),
+    (
+        not(check_agent_belief(Drone, busy)),
+        add_agent_belief(Drone, busy)
+    ),
+    add_agent_desire(Drone, finish_delivery(B)),
+    del_belief(drone_delivery(B))
+].
+
 /*  Need to recharge after pkg_switch*/
 add pkg_switch(_) && (belief needRecharge) => [
     
@@ -100,14 +109,21 @@ add pkg_switch_reverse(B) && (\+ belief busy) => [
     cr goTo(StartPlatform),
     
     
-    /*trigger a drone to perform ending part of delivery*/
-    add_desire(drone_delivery(B)),
-    act (getDrone, Drone),
-    add_agent_desire(Drone, finish_delivery(B)),
-
+    /*need to call drone for delivery*/
+    add_belief(drone_delivery(B)),
     
     act dropDown(StartPlatform),
     add_belief(needRecharge)
+].
+
+add pkg_switch_reverse(_) && (belief drone_delivery(B)) => [
+    act (getDrone, Drone),
+    (
+        not(check_agent_belief(Drone, busy)),
+        add_agent_belief(Drone, busy)
+    ),
+    add_agent_desire(Drone, finish_delivery(B)),
+    del_belief(drone_delivery(B))
 ].
 
 /*  Need to recharge after pkg_switch_reverse*/

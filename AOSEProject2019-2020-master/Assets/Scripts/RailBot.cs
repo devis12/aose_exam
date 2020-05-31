@@ -110,12 +110,12 @@ public class RailBot : Agent
     public GameObject GetDrone()
     {   
         //prefer Drone which with a very high probability is not busy, i.e. on its charging station
-        foreach(GameObject go in drones){
+        /*foreach(GameObject go in drones){
             Drone d = go.GetComponent<Drone>();
             if(d.Charging())//best drone in the market!!
                 return go;
             
-        }
+        }*/
         return drones[Random.Range(0, drones.Length)];
     }
 

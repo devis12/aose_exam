@@ -64,9 +64,7 @@ add init_delivery(_) && (belief needRecharge) => [
 ].
 
 /*  trigger by railbot in order to finish the delivery, taking box B to destination address*/
-add finish_delivery(B) && (\+ belief busy) => [
-    
-    add_belief(busy),
+add finish_delivery(B) && (belief busy) => [
     
     /*Pickup box B to deliver it to destination house*/
     cr takeOff,
